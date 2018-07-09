@@ -8,7 +8,7 @@ use Yef\Response;
 /**
  * 框架引导类
  */
-class Bootstrap
+class BootYef
 {
     private static $app;
 
@@ -101,6 +101,12 @@ class Bootstrap
             // 响应结束
             self::$app['event']->emit('app.after');
         }
+    }
+
+    public static function buildApp($event)
+    {
+        $installed = $event->getComposer();
+        var_dump($installed);
     }
 }
 
