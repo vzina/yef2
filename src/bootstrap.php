@@ -102,12 +102,6 @@ class BootYef
             self::$app['event']->emit('app.after');
         }
     }
-
-    public static function buildApp($event)
-    {
-        $installed = $event->getComposer();
-        var_dump($installed);
-    }
 }
 
 /**
