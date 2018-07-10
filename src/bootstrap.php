@@ -37,7 +37,7 @@ class BootYef
         /* Simply build the application around your URLs */
         self::$app = new App($conf->all());
         // 错误
-        \set_error_handler(['Bootstrap', 'exceptionErrorHandler']);
+        \set_error_handler([__CLASS__, 'exceptionErrorHandler']);
         // 初始化
         self::$app['event']->emit('app.init');
         self::$app->parseRouteByController();
