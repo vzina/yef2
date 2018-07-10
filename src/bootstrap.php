@@ -111,7 +111,7 @@ class BootYef
  */
 function app($name = '', $value = null, $default = null)
 {
-    return Bootstrap::app($name, $value, $default);
+    return BootYef::app($name, $value, $default);
 }
 
 /**
@@ -122,7 +122,7 @@ function app($name = '', $value = null, $default = null)
  */
 function db($conf = 'localDb')
 {
-    $db = Bootstrap::app('db');
+    $db = BootYef::app('db');
     if (empty($db) || empty($obj = $db($conf))) {
         throw new \Exception('db操作对象不存在！');
     }
@@ -137,7 +137,7 @@ function db($conf = 'localDb')
  */
 function logs($msg, $level = 'info')
 {
-    $log = Bootstrap::app();
+    $log = BootYef::app();
     if (empty($log)) {
         throw new \Exception('日志操作对象不存在！');
     }
