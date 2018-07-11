@@ -172,14 +172,14 @@ class App extends Container
         return $response->setProtocolVersion('1.1');
     }
 
-    public function formatResponse($request, &$response, $res, $format = 'string')
+    public function formatResponse($request, &$response, $res, $as)
     {
         if ($res instanceof ContractsView || $res instanceof Response) {
             $res = $res->getContent();
         } elseif (is_array($res) || is_object($res)) {
             $res = json_encode($res, JSON_UNESCAPED_UNICODE);
         }
-
+        $format = empty($as['return']) ? 'string' : $as['return'];
         switch (strtolower($format)) {
             case 'jsonp':
                 $res = sprintf("/**/%s(%s)", $request->get('callback', 'callback'), $res);
@@ -193,7 +193,7 @@ class App extends Container
                 # code...
                 break;
         }
-
+        $response->setContent($res);
         $this['event']->emit('before.response', [$response]);
     }
 }
