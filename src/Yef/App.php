@@ -30,7 +30,7 @@ class App extends Container
     {
         $this->_dispatcher = \FastRoute\cachedDispatcher(function (RouteCollector $rCollector) {
             $controllerSuffix = 'Controller.php';
-            $ctrollerFile     = $this->globRecursive(__CONTROLLER__ . '/*');
+            $ctrollerFile = $this->globRecursive(__CONTROLLER__ . '/*');
             foreach ($ctrollerFile as $file) {
                 if (empty(strpos($file, $controllerSuffix))) {
                     continue;
@@ -43,7 +43,7 @@ class App extends Container
                         continue;
                     }
                     $controllerName = str_replace([__CONTROLLER__, $controllerSuffix], '', $file);
-                    $methods        = $reflector->getMethods(\ReflectionMethod::IS_PUBLIC);
+                    $methods = $reflector->getMethods(\ReflectionMethod::IS_PUBLIC);
                 } catch (\Exception $e) {
                     continue;
                 }
@@ -95,14 +95,14 @@ class App extends Container
         $this['event']->emit('before.dispatcher', [$request]);
         // Fetch method and URI from somewhere
         $httpMethod = $request->getMethod();
-        $uri        = $request->getRequestUri();
+        $uri = $request->getRequestUri();
 
         // Strip query string (?foo=bar) and decode URI
         if (false !== $pos = strpos($uri, '?')) {
             $uri = substr($uri, 0, $pos);
         }
 
-        $uri       = rawurldecode($uri);
+        $uri = rawurldecode($uri);
         $routeInfo = $this->_dispatcher->dispatch($httpMethod, $uri);
         $this['event']->emit('after.dispatcher', [$routeInfo]);
         switch ($routeInfo[0]) {
@@ -161,7 +161,7 @@ class App extends Container
         if (func_num_args() >= 2) {
             //2 args setter
             list($statusCode, $content) = func_get_args();
-            $response                   = new Response($content, $statusCode);
+            $response = new Response($content, $statusCode);
         } elseif (func_num_args() == 1) {
             //1 argument setter
             $response = func_get_arg(0);
