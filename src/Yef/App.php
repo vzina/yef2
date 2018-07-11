@@ -5,7 +5,7 @@ use Evenement\EventEmitter;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Pimple\Container;
-use Yef\Contracts\View\View;
+use Yef\Contracts\View\View as ContractsView;
 use Yef\Coroutine\Task;
 use zpt\anno\Annotations;
 
@@ -71,7 +71,7 @@ class App extends Container
                     }
 
                     $rCollector->addRoute($as['method'], $as['path'],
-                        [$controller, $methodName]);
+                        [$controller, $methodName, $as]);
                 }
             }
         }, [
@@ -121,30 +121,33 @@ class App extends Container
 
     public function handleController($request, $response, $routeInfo)
     {
-        list(, list($controller, $method), $vars) = $routeInfo;
+        list(, list($controller, $method, $as), $vars) = $routeInfo;
         // code
         $res = call_user_func_array(
             [new $controller($request, $response), $method], $vars);
-        if ($res instanceof \Generator) {
+        $isGen = $res instanceof \Generator;
+        if ($isGen || isset($as['async'])) {
             if ($this->maxTaskId == PHP_INT_MAX) {
                 $this->maxTaskId = 0;
             }
             ++$this->maxTaskId;
             $task = new Task($this->maxTaskId,
-                $this->handleAsyncController($request, $response, $res));
+                $this->handleAsyncController($request, $response, $res, $as, $isGen));
             $task->run();
             abort_app('yield_task');
         }
         // 格式化返回的结果
-        $this->formatResponse($response, $res);
+        $this->formatResponse($request, $response, $res, $as);
         return $response;
     }
 
-    public function handleAsyncController($_request, $_response, $res)
+    private function handleAsyncController($_request, $_response, $res, $as = [], $isGen = true)
     {
-        $res = (yield $res);
+        if ($isGen) {
+            $res = (yield $res);
+        }
         // 格式化返回的结果
-        $this->formatResponse($_response, $res);
+        $this->formatResponse($_request, $_response, $res, $as);
         $_response->execSendCallback();
         yield;
     }
@@ -169,19 +172,28 @@ class App extends Container
         return $response->setProtocolVersion('1.1');
     }
 
-    public function formatResponse(&$response, $res)
+    public function formatResponse($request, &$response, $res, $format = 'string')
     {
-        $this['event']->emit('format.response', [$response, $res]);
-        if ($res instanceof View) {
-            $response->setContent($res->getContent());
-        } elseif (!($res instanceof Response)) {
-            if (is_array($res) || is_object($res)) {
-                $res = json_encode($res);
-            }
-            $response->setContent($res);
-        } else {
-            $response = $res;
+        if ($res instanceof ContractsView || $res instanceof Response) {
+            $res = $res->getContent();
+        } elseif (is_array($res) || is_object($res)) {
+            $res = json_encode($res, JSON_UNESCAPED_UNICODE);
         }
+
+        switch (strtolower($format)) {
+            case 'jsonp':
+                $res = sprintf("/**/%s(%s)", $request->get('callback', 'callback'), $res);
+            case 'json':
+                $response->headers->set('Content-Type', 'application/json');
+                break;
+            case 'cros':
+                $response->headers->set('Content-Type', 'application/json');
+                break;
+            default:
+                # code...
+                break;
+        }
+
         $this['event']->emit('before.response', [$response]);
     }
 }

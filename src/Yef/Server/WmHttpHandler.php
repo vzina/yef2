@@ -3,13 +3,13 @@ namespace Yef\HttpServer;
 
 use Workerman\Protocols\Http;
 use Workerman\Worker;
-use Yef\Contracts\HttpServer\HttpServer as IHttpServer;
+use Yef\Contracts\Server\Server as ContractsServer;
 use Yef\Request;
 
 /**
  * wm httpserver
  */
-class WmHttpHandler implements IHttpServer
+class WmHttpHandler implements ContractsServer
 {
     private $worker;
 
@@ -34,7 +34,7 @@ class WmHttpHandler implements IHttpServer
         $http->start();
     }
 
-    public function getHttpServer()
+    public function getServer()
     {
         return $this->worker;
     }
@@ -85,7 +85,7 @@ class WmHttpHandler implements IHttpServer
             };
             //
             $_response->setSendCallback($sendValueFunc);
-            $rs = \Bootstrap::exec($_request, $_response);
+            $rs = \BootYef::exec($_request, $_response);
             if (empty($rs)) {
                 return;
             }
