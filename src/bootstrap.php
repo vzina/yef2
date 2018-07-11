@@ -39,8 +39,31 @@ class BootYef
         // 错误
         \set_error_handler([__CLASS__, 'exceptionErrorHandler']);
         // 初始化
+        self::initEvents();
         self::$app['event']->emit('app.init');
         self::$app->parseRouteByController();
+    }
+
+    private static function initEvents()
+    {
+        if (!empty(self::$app['events'])) {
+            return;
+        }
+        $events = ['appInit','beforeDispatcher','afterDispatcher','beforeResponse','formatResponse','appError','appAfter'];
+        $eventHandlerList = (array) self::$app['events'];
+        $interface        = 'Yef\Contracts\Events\Events';
+        foreach ($eventHandlerList as $eventHandler) {
+            $ref = new \ReflectionClass($eventHandler);
+            if (!$ref->implementsInterface($interface)) {
+                continue;
+            }
+            $eventInstance = $ref->newInstance(self::$app);
+            foreach ($events as $event) {
+                $eventName = strtolower(preg_replace(
+                    '/((?<=[a-z])(?=[A-Z]))/', '.', $event));
+                self::$app['event']->on($eventName, [$eventInstance, $event]);
+            }
+        }
     }
 
     public static function exceptionErrorHandler($errno, $errstr, $errfile, $errline)
@@ -74,17 +97,17 @@ class BootYef
     {
         self::init();
         if ($address) {
-            if (empty(self::$app['httpServerHandler'])) {
+            if (empty(self::$app['ServerHandler'])) {
                 echo '未配置httpServerHandler参数' . PHP_EOL;
                 return;
             }
-            $ref       = new \ReflectionClass(self::$app['httpServerHandler']);
-            $interface = 'Yef\Contracts\HttpServer\HttpServer';
+            $ref       = new \ReflectionClass(self::$app['ServerHandler']);
+            $interface = 'Yef\Contracts\Server\Server';
             if (!$ref->implementsInterface($interface)) {
                 echo '未实现接口：' . $interface . PHP_EOL;
                 return;
             }
-            call_user_func([self::$app['httpServerHandler'], 'run'], $address);
+            call_user_func([self::$app['ServerHandler'], 'run'], $address);
             return;
         }
         try {

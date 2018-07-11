@@ -1,13 +1,13 @@
 <?php
 namespace Yef\HttpServer;
 
-use Yef\Contracts\HttpServer\HttpServer as IHttpServer;
+use Yef\Contracts\Server\Server as ContractsServer;
 use Yef\Request;
 
 /**
  * sw httpserver
  */
-class SwHttpHandler implements IHttpServer
+class SwHttpHandler implements ContractsServer
 {
     private $http;
 
@@ -33,7 +33,7 @@ class SwHttpHandler implements IHttpServer
         $http->start();
     }
 
-    public function getHttpServer()
+    public function getServer()
     {
         return $this->http;
     }
@@ -99,7 +99,7 @@ class SwHttpHandler implements IHttpServer
             };
             $_response->setSendCallback($sendValueFunc);
 
-            $rs = \Bootstrap::exec($_request, $_response);
+            $rs = \BootYef::exec($_request, $_response);
             if (empty($rs)) {
                 return;
             }

@@ -27,7 +27,7 @@
     "catfan/Medoo": "~1.5",
     "monolog/monolog": "~1.0",
     "symfony/http-foundation": "~2.7.0",
-    "evenement/evenement": "^3.0 || ^2.0",
+    "evenement/evenement": "^2.0",
     "workerman/workerman": "*"
   },
   "autoload": {

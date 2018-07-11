@@ -1,0 +1,51 @@
+2018-07-08 16:59:18 pid:41263 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:02:18 pid:41263 Workerman[socket.php] stopping ...
+2018-07-08 17:02:18 pid:41263 Workerman[socket.php] has been stopped
+2018-07-08 17:02:19 pid:41321 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:02:22 pid:41323 ErrorException: Undefined variable: resp in /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/conf/workerman.php:67
+Stack trace:
+#0 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/conf/workerman.php(67): Bootstrap::exceptionErrorHandler(8, 'Undefined varia...', '/Users/yeweijia...', 67, Array)
+#1 [internal function]: Noodlehaus\FileParser\Php->{closure}(Object(Workerman\Connection\TcpConnection), Array)
+#2 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/vendor/workerman/workerman/Connection/TcpConnection.php(645): call_user_func(Object(Closure), Object(Workerman\Connection\TcpConnection), Array)
+#3 [internal function]: Workerman\Connection\TcpConnection->baseRead(Resource id #54)
+#4 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/vendor/workerman/workerman/Events/Swoole.php(192): Swoole\Event::wait()
+#5 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/vendor/workerman/workerman/Worker.php(2231): Workerman\Events\Swoole->loop()
+#6 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/vendor/workerman/workerman/Worker.php(1356): Workerman\Worker->run()
+#7 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/vendor/workerman/workerman/Worker.php(1188): Workerman\Worker::forkOneWorkerForLinux(Object(Workerman\Worker))
+#8 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/vendor/workerman/workerman/Worker.php(1162): Workerman\Worker::forkWorkersForLinux()
+#9 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/vendor/workerman/workerman/Worker.php(478): Workerman\Worker::forkWorkers()
+#10 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/conf/workerman.php(74): Workerman\Worker::runAll()
+#11 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/src/bootstrap.php(88): Noodlehaus\FileParser\Php->{closure}('http://127.0.0....')
+#12 /Users/yeweijian/Public/data/php/webtest/test/phar-demo/framework2/public/socket.php(6): Bootstrap::start('http://127.0.0....')
+#13 {main}
+2018-07-08 17:02:22 pid:41323 Worker[41323] process terminated
+2018-07-08 17:02:22 pid:41321 worker[webtest:41323] exit with status 64000
+2018-07-08 17:02:37 pid:41321 Workerman[socket.php] stopping ...
+2018-07-08 17:02:37 pid:41321 Workerman[socket.php] has been stopped
+2018-07-08 17:02:37 pid:41336 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:03:12 pid:41336 Workerman[socket.php] stopping ...
+2018-07-08 17:03:12 pid:41336 Workerman[socket.php] has been stopped
+2018-07-08 17:31:21 pid:41737 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:32:17 pid:41737 Workerman[socket.php] stopping ...
+2018-07-08 17:32:17 pid:41737 Workerman[socket.php] has been stopped
+2018-07-08 17:32:18 pid:41758 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:33:06 pid:41758 Workerman[socket.php] stopping ...
+2018-07-08 17:33:06 pid:41758 Workerman[socket.php] has been stopped
+2018-07-08 17:33:06 pid:41779 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:33:36 pid:41779 Workerman[socket.php] stopping ...
+2018-07-08 17:33:36 pid:41779 Workerman[socket.php] has been stopped
+2018-07-08 17:33:37 pid:41798 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:35:05 pid:41798 Workerman[socket.php] stopping ...
+2018-07-08 17:35:06 pid:41798 Workerman[socket.php] has been stopped
+2018-07-08 17:35:06 pid:41827 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:36:19 pid:41827 Workerman[socket.php] stopping ...
+2018-07-08 17:36:19 pid:41827 Workerman[socket.php] has been stopped
+2018-07-08 17:36:20 pid:41854 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:36:46 pid:41854 Workerman[socket.php] stopping ...
+2018-07-08 17:36:46 pid:41854 Workerman[socket.php] has been stopped
+2018-07-08 17:36:47 pid:41868 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:39:43 pid:41868 Workerman[socket.php] stopping ...
+2018-07-08 17:39:43 pid:41868 Workerman[socket.php] has been stopped
+2018-07-08 17:39:44 pid:41921 Workerman[public/socket.php] start in DEBUG mode
+2018-07-08 17:51:13 pid:41921 Workerman[socket.php] stopping ...
+2018-07-08 17:51:13 pid:41921 Workerman[socket.php] has been stopped
