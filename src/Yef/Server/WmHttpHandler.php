@@ -1,5 +1,5 @@
 <?php
-namespace Yef\HttpServer;
+namespace Yef\Server;
 
 use Workerman\Protocols\Http;
 use Workerman\Worker;

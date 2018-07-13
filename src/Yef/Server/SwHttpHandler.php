@@ -1,5 +1,5 @@
 <?php
-namespace Yef\HttpServer;
+namespace Yef\Server;
 
 use Yef\Contracts\Server\Server as ContractsServer;
 use Yef\Request;
