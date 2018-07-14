@@ -1,4 +1,5 @@
 <?php
+use Medoo\Medoo;
 use Noodlehaus\Config;
 use Yef\App;
 use Yef\ExceptionHandler;
@@ -49,9 +50,9 @@ class BootYef
         if (!empty(self::$app['events'])) {
             return;
         }
-        $events = ['appInit','beforeDispatcher','afterDispatcher','beforeResponse','formatResponse','appError','appAfter'];
+        $events = ['appInit', 'beforeDispatcher', 'afterDispatcher', 'beforeResponse', 'formatResponse', 'appError', 'appAfter'];
         $eventHandlerList = (array) self::$app['events'];
-        $interface        = 'Yef\Contracts\Events\Events';
+        $interface = 'Yef\Contracts\Events\Events';
         foreach ($eventHandlerList as $eventHandler) {
             $ref = new \ReflectionClass($eventHandler);
             if (!$ref->implementsInterface($interface)) {
@@ -70,12 +71,12 @@ class BootYef
     {
         $displayErrors = ini_get("display_errors");
         $displayErrors = strtolower($displayErrors);
-        $level         = error_reporting();
+        $level = error_reporting();
         if ($level === 0 && $displayErrors === "off") {
             return;
         }
         $severity = 1 * $level;
-        $ex       = new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+        $ex = new \ErrorException($errstr, 0, $errno, $errfile, $errline);
         if (($ex->getSeverity() & $severity) != 0) {
             throw $ex;
         }
@@ -101,7 +102,7 @@ class BootYef
                 echo '未配置httpServerHandler参数' . PHP_EOL;
                 return;
             }
-            $ref       = new \ReflectionClass(self::$app['ServerHandler']);
+            $ref = new \ReflectionClass(self::$app['ServerHandler']);
             $interface = 'Yef\Contracts\Server\Server';
             if (!$ref->implementsInterface($interface)) {
                 echo '未实现接口：' . $interface . PHP_EOL;
@@ -143,13 +144,28 @@ function app($name = '', $value = null, $default = null)
  * @param  string $conf [description]
  * @return Medoo\Medoo
  */
-function db($conf = 'localDb')
+function db($confName = 'localDb', $isMaster = false)
 {
-    $db = BootYef::app('db');
-    if (empty($db) || empty($obj = $db($conf))) {
-        throw new \Exception('db操作对象不存在！');
+    $app = BootYef::app();
+    if (empty($confName)) {
+        $confName = 'localDb';
     }
-    return $obj;
+    $key = 'db.' . $confName . '.' . intval($isMaster);
+    if (empty($app[$key])) {
+        $app[$key] = $app->factory(function () use ($confName, $isMaster) {
+            $confName = $confName ?: app('defaultDbConf', null, 'localDb');
+            if (!$conf = app($confName)) {
+                return false;
+            }
+            $conf['server'] = $conf['master'];
+            if (!$isMaster) {
+                $conf['server'] = $conf['slave'][array_rand($conf['slave'], 1)];
+            }
+            // Initialize
+            return new Medoo($conf);;
+        });
+    }
+    return $app[$key];
 }
 
 /**
@@ -160,9 +176,20 @@ function db($conf = 'localDb')
  */
 function logs($msg, $level = 'info')
 {
-    $log = BootYef::app();
+    $log = BootYef::app('log');
     if (empty($log)) {
-        throw new \Exception('日志操作对象不存在！');
+        $config = (array) BootYef::app('logs') + [
+            "name" => "app",
+            "file" => __RUNTIME__ . '/app/' . date('Ymd') . '.log',
+            "log_level" => Monolog\Logger::DEBUG,
+        ];
+        if (empty($config)) {
+            return false;
+        }
+        // create a log channel
+        $log = new Monolog\Logger($config['name']);
+        $log->pushHandler(new Monolog\Handler\StreamHandler($config['file'], $config['log_level']));
+        BootYef::app('log', $log);
     }
 
     return $log->log(strtoupper($level), $msg);
@@ -184,8 +211,8 @@ function httpClient($url, $method = 'GET', $content = '', $headers = [])
     }
     $opts = [
         'http' => [
-            'method'  => $method,
-            'header'  => $headers ?: "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36\r\n",
+            'method' => $method,
+            'header' => $headers ?: "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36\r\n",
             'content' => $content,
         ],
     ];
@@ -206,11 +233,11 @@ function show_err_page(\Exception $e, Response $response = null, $statusCode = 5
     }
     app('event')->emit('app.error', [$e]);
     if ($msg == 'yef_jump_exit') {
-        $error      = '';
+        $error = '';
         $statusCode = 200;
     } else {
         $exception = new ExceptionHandler();
-        $error     = $exception->handleException($e);
+        $error = $exception->handleException($e);
     }
 
     if ($response) {
