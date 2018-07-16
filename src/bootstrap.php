@@ -1,7 +1,7 @@
 <?php
 use Medoo\Medoo;
-use Noodlehaus\Config;
 use Yef\App;
+use Yef\Config;
 use Yef\ExceptionHandler;
 use Yef\Request;
 use Yef\Response;
