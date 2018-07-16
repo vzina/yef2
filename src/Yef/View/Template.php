@@ -64,6 +64,14 @@ class Template implements IView
         self::$_config = array_merge(self::$_config, $cfg);
     }
 
+    public function __destruct()
+    {
+        // 重置配置信息
+        if (app('server.container')) {
+            self::config(app('template'));
+        }
+    }
+
     /**
      * Setup for view, used for extensibility without overriding constructor
      */
