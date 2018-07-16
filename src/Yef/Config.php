@@ -2,7 +2,7 @@
 
 namespace Yef;
 
-use Noodlehaus\Config as AbstractConfig;
+use Noodlehaus\AbstractConfig;
 use Noodlehaus\Exception\EmptyDirectoryException;
 use Noodlehaus\Exception\FileNotFoundException;
 use Noodlehaus\Exception\UnsupportedFormatException;
@@ -144,7 +144,7 @@ class Config extends AbstractConfig
         // If `$path` is a directory
         if (is_dir($path)) {
             $paths = [];
-            $this->getAllFiles($path, $paths);
+            get_file_recursive($path, $paths);
             if (empty($paths)) {
                 throw new EmptyDirectoryException("Configuration directory: [$path] is empty");
             }
@@ -156,21 +156,5 @@ class Config extends AbstractConfig
             throw new FileNotFoundException("Configuration file: [$path] cannot be found");
         }
         return array($path);
-    }
-
-    private function getAllFiles($path, &$files)
-    {
-        if (is_dir($path)) {
-            $dp = dir($path);
-            while ($file = $dp->read()) {
-                if ($file != "." && $file != "..") {
-                    $this->getAllFiles($path . "/" . $file, $files);
-                }
-            }
-            $dp->close();
-        }
-        if (is_file($path)) {
-            $files[] = $path;
-        }
     }
 }

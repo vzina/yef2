@@ -31,8 +31,9 @@ class BootYef
         defined('__ROOT__') or define('__ROOT__', dirname(__DIR__));
         defined('__CONF__') or define('__CONF__', __ROOT__ . '/conf');
         defined('__RUNTIME__') or define('__RUNTIME__', __ROOT__ . '/runtime');
-        defined('__CONTROLLER__') or define('__CONTROLLER__', __ROOT__ . '/apps/Controllers');
         defined('__VIEW__') or define('__VIEW__', __ROOT__ . '/views');
+        // 不允许修改控制器目录
+        define('__CONTROLLER__', __ROOT__ . '/apps/Controllers');
 
         $conf = Config::load(__CONF__);
         /* Simply build the application around your URLs */
@@ -247,4 +248,29 @@ function show_err_page(\Exception $e, Response $response = null, $statusCode = 5
         $response = app()->response($statusCode, $error);
     }
     $response->execSendCallback();
+}
+
+function get_file_recursive($path, &$files)
+{
+    if (is_dir($path)) {
+        $dp = dir($path);
+        while ($file = $dp->read()) {
+            if ($file != "." && $file != "..") {
+                get_file_recursive($path . "/" . $file, $files);
+            }
+        }
+        $dp->close();
+    }
+    if (is_file($path)) {
+        $files[] = $path;
+    }
+}
+
+function glob_recursive($pattern, $flags = 0)
+{
+    $files = glob($pattern, $flags);
+    foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
+        $files = array_merge($files, glob_recursive($dir . '/' . basename($pattern), $flags));
+    }
+    return $files;
 }

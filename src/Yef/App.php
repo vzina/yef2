@@ -28,17 +28,19 @@ class App extends Container
 
     public function parseRouteByController()
     {
+        $cacheFile = !empty($this['route.cacheFile']) ? $this['route.cacheFile'] : true;
         $this->_dispatcher = \FastRoute\cachedDispatcher(function (RouteCollector $rCollector) {
             $controllerSuffix = 'Controller.php';
-            $ctrollerFile = $this->globRecursive(__CONTROLLER__ . '/*');
+            $ctrollerFile = [];
+            get_file_recursive(__CONTROLLER__, $ctrollerFile);
             foreach ($ctrollerFile as $file) {
                 if (empty(strpos($file, $controllerSuffix))) {
                     continue;
                 }
-                $controller = str_replace([__ROOT__ . '/', '/', '.php'], ['', '\\', ''], $file);
+                $controller = ucfirst(str_replace([__ROOT__ . '/', '/', '.php'], ['', '\\', ''], $file));
 
                 try {
-                    $reflector = new \ReflectionClass(ucfirst($controller));
+                    $reflector = new \ReflectionClass($controller);
                     if (!$reflector->isSubclassOf(Controller::class)) {
                         continue;
                     }
@@ -75,18 +77,9 @@ class App extends Container
                 }
             }
         }, [
-            'cacheFile' => __RUNTIME__ . '/route.cache', /* required */
-            'cacheDisabled' => __DEBUG__, /* optional, enabled by default */
+            'cacheFile' => $cacheFile, /* required */
+            'cacheDisabled' => empty($cacheFile), /* optional, enabled by default */
         ]);
-    }
-
-    private function globRecursive($pattern, $flags = 0)
-    {
-        $files = glob($pattern, $flags);
-        foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
-            $files = array_merge($files, $this->globRecursive($dir . '/' . basename($pattern), $flags));
-        }
-        return $files;
     }
 
     public function run(Request $request, Response $response = null)
@@ -95,7 +88,7 @@ class App extends Container
         $this['event']->emit('before.dispatcher', [$request]);
         // Fetch method and URI from somewhere
         $httpMethod = $request->getMethod();
-        $uri = $request->getRequestUri();
+        $uri = $request->getRequestUri() ?: $request->get('u');
 
         // Strip query string (?foo=bar) and decode URI
         if (false !== $pos = strpos($uri, '?')) {
@@ -146,6 +139,7 @@ class App extends Container
         if ($isGen) {
             $res = (yield $res);
         }
+
         // 格式化返回的结果
         $this->formatResponse($_request, $_response, $res, $as);
         $_response->execSendCallback();
