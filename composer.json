@@ -5,19 +5,13 @@
       "name": "yeweijian"
     }
   ],
-  "description": "phar.",
+  "description": "framework.",
   "keywords": [
-    "phar"
+    "framework"
   ],
   "license": "MIT",
   "minimum-stability": "dev",
-  "name": "phar/demo",
-  "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.phpcomposer.com"
-    }
-  },
+  "name": "vzina/yef2",
   "require": {
     "php": ">=5.6.0",
     "pimple/pimple": "^3.0",
